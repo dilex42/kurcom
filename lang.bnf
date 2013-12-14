@@ -1,0 +1,34 @@
+
+<identifier> = /[a-z][a-z0-9_]*/
+
+<intLiteral> = /0|[1-9][0-9]+/
+
+<program> = [<varChapter>] [<funcChapter>] <goChapter>
+
+<varChapter> = "VAR" "{" <varDecl> {"," <varDecl>} "}"
+
+<varDecl> = <identifier> ":" <varType>
+
+<varType> = <intLiteral>
+
+<goChapter> = "GO" <block>
+<block> = "{" <statement> "}"
+<statement> = <assignmentStatement> | <expressionStatement>
+
+<expressionStatement> = <expression> ";"
+<assignmentStatement> = <identifier> "=" <expression> ";"
+<expression> = <mathExpression> | <booleanExpression>
+<mathexpression> = <operand> <mathOperator> <operand>
+<booleanExpression> = <operand> <booleanOperator> <operand>
+<mathOperator> = "+" | "-" | "*" | "/" | "**"
+<booleanOperator> = "and" | "or"
+<operand> = <identifier> | <varType>  
+
+
+
+
+
+<funcChapter> = "FUNC" "{" <funcBlock>+ "}"
+
+<funcBlock> = <funcDecl> "{"<varDecl> <block> "}"
+<funcDecl> = 
