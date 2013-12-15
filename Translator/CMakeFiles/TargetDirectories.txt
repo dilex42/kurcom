@@ -1,0 +1,4 @@
+/home/dima/kurcom/Translator/lib/gtest-1.6.0/CMakeFiles/gtest.dir
+/home/dima/kurcom/Translator/lib/gtest-1.6.0/CMakeFiles/gtest_main.dir
+/home/dima/kurcom/Translator/CMakeFiles/trans.dir
+/home/dima/kurcom/Translator/CMakeFiles/trans_test.dir

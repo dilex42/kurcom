@@ -1,0 +1,53 @@
+Determining if the pthread_create exist failed with the following output:
+Change Dir: /home/dima/kurcom/Translator/CMakeFiles/CMakeTmp
+
+Run Build Command:/usr/bin/make "cmTryCompileExec1452897666/fast"
+/usr/bin/make -f CMakeFiles/cmTryCompileExec1452897666.dir/build.make CMakeFiles/cmTryCompileExec1452897666.dir/build
+make[1]: Вхожу у каталог "/home/dima/kurcom/Translator/CMakeFiles/CMakeTmp"
+/usr/bin/cmake -E cmake_progress_report /home/dima/kurcom/Translator/CMakeFiles/CMakeTmp/CMakeFiles 1
+Building C object CMakeFiles/cmTryCompileExec1452897666.dir/CheckSymbolExists.c.o
+/usr/bin/cc    -o CMakeFiles/cmTryCompileExec1452897666.dir/CheckSymbolExists.c.o   -c /home/dima/kurcom/Translator/CMakeFiles/CMakeTmp/CheckSymbolExists.c
+Linking C executable cmTryCompileExec1452897666
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTryCompileExec1452897666.dir/link.txt --verbose=1
+/usr/bin/cc         CMakeFiles/cmTryCompileExec1452897666.dir/CheckSymbolExists.c.o  -o cmTryCompileExec1452897666 -rdynamic 
+CMakeFiles/cmTryCompileExec1452897666.dir/CheckSymbolExists.c.o: у функції «main»:
+CheckSymbolExists.c:(.text+0x16): невизначене посилання «pthread_create»
+collect2: error: ld returned 1 exit status
+make[1]: *** [cmTryCompileExec1452897666] Помилка 1
+make[1]: Залишаю каталог "/home/dima/kurcom/Translator/CMakeFiles/CMakeTmp"
+make: *** [cmTryCompileExec1452897666/fast] Помилка 2
+
+File /home/dima/kurcom/Translator/CMakeFiles/CMakeTmp/CheckSymbolExists.c:
+/* */
+#include <pthread.h>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef pthread_create
+  return ((int*)(&pthread_create))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
+
+Determining if the function pthread_create exists in the pthreads failed with the following output:
+Change Dir: /home/dima/kurcom/Translator/CMakeFiles/CMakeTmp
+
+Run Build Command:/usr/bin/make "cmTryCompileExec1652499116/fast"
+/usr/bin/make -f CMakeFiles/cmTryCompileExec1652499116.dir/build.make CMakeFiles/cmTryCompileExec1652499116.dir/build
+make[1]: Вхожу у каталог "/home/dima/kurcom/Translator/CMakeFiles/CMakeTmp"
+/usr/bin/cmake -E cmake_progress_report /home/dima/kurcom/Translator/CMakeFiles/CMakeTmp/CMakeFiles 1
+Building C object CMakeFiles/cmTryCompileExec1652499116.dir/CheckFunctionExists.c.o
+/usr/bin/cc   -DCHECK_FUNCTION_EXISTS=pthread_create   -o CMakeFiles/cmTryCompileExec1652499116.dir/CheckFunctionExists.c.o   -c /usr/share/cmake-2.8/Modules/CheckFunctionExists.c
+Linking C executable cmTryCompileExec1652499116
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTryCompileExec1652499116.dir/link.txt --verbose=1
+/usr/bin/cc     -DCHECK_FUNCTION_EXISTS=pthread_create    CMakeFiles/cmTryCompileExec1652499116.dir/CheckFunctionExists.c.o  -o cmTryCompileExec1652499116 -rdynamic -lpthreads 
+/usr/bin/ld: не вдалося знайти -lpthreads
+collect2: error: ld returned 1 exit status
+make[1]: Залишаю каталог "/home/dima/kurcom/Translator/CMakeFiles/CMakeTmp"
+make[1]: *** [cmTryCompileExec1652499116] Помилка 1
+make: *** [cmTryCompileExec1652499116/fast] Помилка 2
+
+

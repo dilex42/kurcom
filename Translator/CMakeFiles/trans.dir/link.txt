@@ -1,0 +1,1 @@
+/usr/bin/c++       CMakeFiles/trans.dir/src/main.cpp.o CMakeFiles/trans.dir/src/Lexer.cpp.o CMakeFiles/trans.dir/src/Node.cpp.o CMakeFiles/trans.dir/src/Seman.cpp.o  -o trans -rdynamic lib/gtest-1.6.0/libgtest.a lib/gtest-1.6.0/libgtest_main.a lib/gtest-1.6.0/libgtest.a -lpthread 

@@ -22,20 +22,24 @@ enum TokenKind {
     DIVIDE, //'/'
     POW, //'**'
 
-    QUOTE, //'#'
+    //QUOTE, //'#'
 
     ASSIGN, //'='
 
     IDENTIFIER,
 
     INT_LITERAL,
+    FLOAT_LITERAL,
 
-    TYPE
+    TYPE,
+    VAR,
+    GO,
+    END
 };
 
 enum DataType {
-    TYPE_VOID = 0,
-    TYPE_INT
+    TYPE_INT = 1,
+    TYPE_FLOAT
 };
 
 inline std::string getKindString(TokenKind kind) {
@@ -60,16 +64,24 @@ inline std::string getKindString(TokenKind kind) {
         return std::string("DIVIDE");
     case POW:
         return std::string("POW");  
-    case QUOTE:
-        return std::string("QUOTE");
+    //case QUOTE:
+    //    return std::string("QUOTE");
     case ASSIGN:
         return std::string("ASSIGN");
     case IDENTIFIER:
         return std::string("IDENTIFIER");
     case INT_LITERAL:
         return std::string("INT_LITERAL");
+    case FLOAT_LITERAL:
+        return std::string("FLOAT_LITERAL");
     case TYPE:
         return std::string("TYPE");
+    case VAR:
+        return std::string("VAR");
+    case GO:
+        return std::string("GO");
+    case END:
+        return std::string("END");
     }
     return "unknown";
 }
@@ -96,8 +108,8 @@ inline std::string dataTypeString(DataType dT) {
     switch (dT) {
     case token::TYPE_INT:
         return "int";
-    case token::TYPE_VOID:
-        return "void";
+    case token::TYPE_FLOAT:
+        return "float";
     }
     return "unknown";
 }
@@ -134,8 +146,9 @@ public:
     Token(token::TokenKind kind, SourceLocation loc) :
             kind(kind), loc(loc), id("") {
         assert(
-                kind != token::ID &&
+                kind != token::IDENTIFIER &&
                 kind != token::INT_LITERAL &&
+                kind != token::FLOAT_LITERAL &&
                 kind != token::TYPE 
         );
     }
@@ -143,8 +156,8 @@ public:
      * For IDENTIFIER.
      **/
     Token(token::TokenKind kind, SourceLocation loc, std::string string_data) :
-            kind(kind), loc(loc), id(string_data), stringData(string_data) {
-        assert(kind == token::ID);
+            kind(kind), loc(loc), id(string_data) {
+        assert(kind == token::IDENTIFIER);
     }
     /**
      * For INT_LITERAL.
@@ -152,6 +165,13 @@ public:
     Token(token::TokenKind kind, SourceLocation loc, int int_data) :
             kind(kind), loc(loc), id(""), intData(int_data) {
         assert(kind == token::INT_LITERAL);
+    }
+    /**
+     * For FLOAT_LITERAL.
+     **/
+    Token(token::TokenKind kind, SourceLocation loc, float float_data) :
+            kind(kind), loc(loc), id(""), floatData(float_data) {
+        assert(kind == token::FLOAT_LITERAL);
     }
     /**
      * For TYPE.
@@ -164,10 +184,13 @@ public:
         return kind;
     }
     std::string getID() {
-        return stringData;
+        return id;
     }
     int getIntData() {
         return intData;
+    }
+    float getFloatData() {
+        return floatData;
     }
     token::DataType getDataType() const {
         return dataType;
@@ -184,6 +207,7 @@ private:
     std::string id;
     //data for tokens with some data
     int intData;
+    float floatData;
     token::DataType dataType;
 };
 

@@ -1,0 +1,26 @@
+project(trans CXX C)
+cmake_minimum_required(VERSION 2.6)
+
+add_definitions(-std=c++11)
+
+add_subdirectory(lib/gtest-1.6.0)
+
+include_directories(
+  ${gtest_SOURCE_DIR}/include
+  ${trans_SOURCE_DIR}/include)
+
+add_executable(trans
+    src/main.cpp
+		src/Lexer.cpp
+                src/Node.cpp
+                src/Seman.cpp)
+add_executable(trans_test
+    src/test.cpp
+    		src/Lexer.cpp
+		src/Parser.cpp
+		src/Node.cpp
+		src/Seman.cpp)
+
+target_link_libraries(trans gtest gtest_main)
+target_link_libraries(trans_test gtest gtest_main)
+

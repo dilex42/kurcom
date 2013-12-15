@@ -2,6 +2,7 @@
 <identifier> = /[a-z][a-z0-9_]*/
 
 <intLiteral> = /0|[1-9][0-9]+/
+<floatLiteral> = <intLiteral> "." /[0-9]*[1-9]/
 
 <program> = [<varChapter>] [<funcChapter>] <goChapter>
 
@@ -9,16 +10,15 @@
 
 <varDecl> = <identifier> ":" <varType>
 
-<varType> = <intLiteral>
+<varType> = <intLiteral> | <floatLiteral> 
 
 <goChapter> = "GO" <block>
 <block> = "{" <statement> "}"
-<statement> = <assignmentStatement> | <expressionStatement>
+<statement> = <assignmentStatement> 
 
-<expressionStatement> = <expression> ";"
 <assignmentStatement> = <identifier> "=" <expression> ";"
 <expression> = <mathExpression> | <booleanExpression>
-<mathexpression> = <operand> <mathOperator> <operand>
+<mathExpression> = <operand> <mathOperator> <operand>
 <booleanExpression> = <operand> <booleanOperator> <operand>
 <mathOperator> = "+" | "-" | "*" | "/" | "**"
 <booleanOperator> = "and" | "or"
