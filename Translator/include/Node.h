@@ -12,9 +12,9 @@ class Visitor;
 
 namespace node{
 
-/*class Expression {
+class Expression {
 public:
-    //virtual void accept(Seman::ASTVisitor *v) = 0;
+    virtual void accept(Seman::Visitor *v) = 0;
 
     SourceLocation getSourceLocation() {
         return loc;
@@ -27,6 +27,8 @@ private:
 
 inline Expression::~Expression() {
 }
+
+
 
 class BinaryExpression: public Expression {
 public:
@@ -48,7 +50,7 @@ public:
         return operation;
     }
 
-    //virtual void accept(Seman::ASTVisitor *v);
+    virtual void accept(Seman::Visitor *v);
 
 private:
     Expression *leftExpr;
@@ -57,20 +59,37 @@ private:
     SourceLocation loc;
 };
 
+class ParenthesesExpression: public Expression {
+public:
+    ParenthesesExpression(Expression *expr, SourceLocation loc) :
+            expr(expr), loc(loc) {
+    }
+
+    Expression *getExpression() const {
+        return expr;
+    }
+
+    virtual void accept(Seman::Visitor *v);
+
+private:
+    Expression *expr;
+    SourceLocation loc;
+};
+
 class IntLiteral: public Expression {
 public:
-    IntLiteral(uint32_t value, SourceLocation loc) :
+    IntLiteral(int value, SourceLocation loc) :
             value(value), loc(loc) {
     }
 
-    uint32_t getValue() const {
+    int getValue() const {
         return value;
     }
 
-    //virtual void accept(Seman::ASTVisitor *v);
+    virtual void accept(Seman::Visitor *v);
 
 private:
-    uint32_t value;
+    int value;
     SourceLocation loc;
 };
 
@@ -84,10 +103,27 @@ public:
         return value;
     }
 
-    //virtual void accept(Seman::ASTVisitor *v);
+    virtual void accept(Seman::Visitor *v);
 
 private:
     double value;
+    SourceLocation loc;
+};
+
+class BooleanLiteral: public Expression {
+public:
+    BooleanLiteral(bool value, SourceLocation loc) :
+            value(value), loc(loc) {
+    }
+
+    bool getValue() const {
+        return value;
+    }
+
+    virtual void accept(Seman::Visitor *v);
+
+private:
+    bool value;
     SourceLocation loc;
 };
 
@@ -101,7 +137,7 @@ public:
         return name;
     }
 
-    //virtual void accept(Seman::ASTVisitor *v);
+    virtual void accept(Seman::Visitor *v);
 
 private:
     std::string name;
@@ -110,7 +146,7 @@ private:
 
 class Statement {
 public:
-    //virtual void accept(Seman::ASTVisitor *v) = 0;
+    virtual void accept(Seman::Visitor *v) = 0;
 
     SourceLocation getSourceLocation() {
         return loc;
@@ -122,28 +158,92 @@ private:
     SourceLocation loc;
 };
 
-class AssignmentStatement: public Statement {
+
+
+class IfStatement: public Statement {
 public:
-    AssignmentStatement(VarReferenceExpression *varExpr, Expression *rightExpr,
+    IfStatement(Expression *condition, std::vector<node::Statement *> sLT,
+            std::vector<node::Statement *> sLF, SourceLocation loc) :
+            condition(condition), sLT(std::move(sLT)), sLF(std::move(sLF)), elseBody(
+                    true), loc(loc) {
+    }
+
+    IfStatement(Expression *condition, std::vector<node::Statement *> sLT,
             SourceLocation loc) :
-            varExpr(varExpr), rightExpr(rightExpr), loc(loc) {
+            condition(condition), sLT(std::move(sLT)), elseBody(false), loc(loc) {
     }
 
-    VarReferenceExpression *getVarExpression() const {
-        return varExpr;
+    bool hasElseBody() const {
+        return elseBody;
     }
 
-    Expression *getRightExpression() const {
-        return rightExpr;
+    Expression *getCondition() const {
+        return condition;
     }
 
-    //virtual void accept(Seman::ASTVisitor *v);
+    const std::vector<node::Statement *> &getStatementsListTrue() const {
+        return sLT;
+    }
+
+    const std::vector<node::Statement *> &getStatementsListFalse() const {
+        return sLF;
+    }
+
+    virtual void accept(Seman::Visitor *v);
 
 private:
-    Expression *varExpr;
-    Expression *rightExpr;
+    Expression *condition;
+    std::vector<node::Statement *> sLT;
+    std::vector<node::Statement *> sLF;
+    bool elseBody;
     SourceLocation loc;
-};*/
+};
+
+class WhileStatement: public Statement {
+public:
+    WhileStatement(Expression *condition, std::vector<node::Statement *> sL,
+            SourceLocation loc) :
+            condition(condition), sL(std::move(sL)), loc(loc) {
+    }
+
+    Expression *getCondition() const {
+        return condition;
+    }
+
+    const std::vector<node::Statement *> &getStatementsList() const {
+        return sL;
+    }
+
+    virtual void accept(Seman::Visitor *v);
+
+private:
+    Expression *condition;
+    std::vector<node::Statement *> sL;
+    SourceLocation loc;
+};
+
+class AssignmentStatement: public Statement {
+public:
+    AssignmentStatement(VarReferenceExpression *varRefExpr, Expression *Expr,
+            SourceLocation loc) :
+            varRefExpr(varRefExpr), Expr(Expr), loc(loc) {
+    }
+
+    VarReferenceExpression *getVarReferenceExpression() const {
+        return varRefExpr;
+    }
+
+    Expression *getExpression() const {
+        return Expr;
+    }
+
+    virtual void accept(Seman::Visitor *v);
+
+private:
+    VarReferenceExpression *varRefExpr;
+    Expression *Expr;
+    SourceLocation loc;
+};
 
 class VarType {
 public:
@@ -212,26 +312,52 @@ private:
     std::vector<VarDecl*> vDl; // var declaration list
     SourceLocation loc;
 };
-/*class Go {
+
+class GoChapter {
 public:
-    Program(std::vector<Statement *> statements, SourceLocation loc) :
-            statements(std::move(statements)), loc(loc) {
+    GoChapter(std::vector<Statement *> sl, SourceLocation loc) :
+            sl(std::move(sl)), loc(loc) {
     }
 
-    const std::vector<Statement *> &getFuncDeclList() const {
-        return fDL;
+    const std::vector<Statement *> &getStatementList() const {
+        return sl;
     }
 
-    void accept(Seman::ASTVisitor *v);
+    void accept(Seman::Visitor *v);
 
     SourceLocation getSourceLocation() {
         return loc;
     }
 
 private:
-    std::vector<FuncDecl*> fDL; // function declaration list
+    std::vector<Statement*> sl; // statements list
     SourceLocation loc;
-};*/
+};
+class Program{
+public:
+    Program(VarChapter *vC,GoChapter *gC, SourceLocation loc) :
+            vC(vC),gC(gC),loc(loc) {
+    }
+
+    VarChapter *getVarChapter() const {
+        return vC;
+    }
+
+    GoChapter *getGoChapter() const {
+        return gC;
+    }
+
+    void accept(Seman::Visitor *v);
+
+    SourceLocation getSourceLocation() {
+        return loc;
+    }
+
+private:
+    VarChapter *vC;
+    GoChapter *gC;
+    SourceLocation loc;  
+};
 
 }
 

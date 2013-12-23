@@ -24,21 +24,20 @@ std::vector<Token> tokenize(std::string source) {
     return result;
 }
 
-node::VarChapter *parse(std::vector<Token> toks, ErrorLoggerWrapper *eLW) {
+node::Program *parse(std::vector<Token> toks, ErrorLoggerWrapper *eLW) {
     Parser p(toks, eLW);
-    return p.parseVarChapter();
+    return p.parseProgram();
 }
 
-::testing::AssertionResult parseResult_isPass(node::VarChapter *var_chapter, CapturingErrorLogger *eL, std::string source) {
-    if(var_chapter == NULL) {   
+::testing::AssertionResult parseResult_isPass(node::Program *program, CapturingErrorLogger *eL, std::string source) {
+    if(program == NULL) {   
         LoggerRecord lR = eL->getRecords()[0];  
         return testing::AssertionFailure() << "AST is broken: "
             << lR.message << " at " << lR.sl.getLine() << ":" << lR.sl.getColumn();
     }
-    
-    Seman::Sema sema;
-    sema.checkAll(var_chapter);
 
+    Seman::Sema sema;
+    sema.checkAll(program);
     if(source.compare(sema.getSyntaxDumperResults()) != 0) {
         return testing::AssertionFailure() << "Source code and reconstructed code do not match!"
             << "Here is recostructed code: " << sema.getSyntaxDumperResults() << "\n"
@@ -48,8 +47,8 @@ node::VarChapter *parse(std::vector<Token> toks, ErrorLoggerWrapper *eLW) {
     return testing::AssertionSuccess();
 }
 
-::testing::AssertionResult parseResult_isFail(node::VarChapter *var_chapter, CapturingErrorLogger *eL, unsigned line, unsigned column) {
-    if(var_chapter != NULL) {       
+::testing::AssertionResult parseResult_isFail(node::Program *program, CapturingErrorLogger *eL, unsigned line, unsigned column) {
+    if(program != NULL) {       
         return testing::AssertionFailure() << "AST is not broken!";
     }
     
@@ -61,14 +60,6 @@ node::VarChapter *parse(std::vector<Token> toks, ErrorLoggerWrapper *eLW) {
             << "Got at " << sl.getLine() << ":" << sl.getColumn();
     }
     
-    return testing::AssertionSuccess();
-}
-
-::testing::AssertionResult tok_is(const Token &tok, token::TokenKind kind) {
-    if (tok.getKind() != kind)
-        return testing::AssertionFailure() << "Expected token kind " << kind
-                << ", got " << tok.getKind();
-
     return testing::AssertionSuccess();
 }
 
@@ -96,6 +87,9 @@ TEST(Lexer, DefaultTest) {
         "VAR{\n"
             "i:int;\n"
             "i:float;\n"
+            "}\n"
+            "GO{\n"
+            "i=1;\n"
             "}";
     std::vector<Token> toks = tokenize(source);
     ASSERT_TRUE(tok_is(toks[0], token::VAR, 1, 1));
@@ -104,33 +98,51 @@ TEST(Lexer, DefaultTest) {
     ASSERT_TRUE(tok_is(toks[3], token::COLON, 2, 2));
     ASSERT_TRUE(tok_is(toks[4], token::TYPE, 2, 3));
     ASSERT_TRUE(tok_is(toks[5], token::SEMICOLON, 2, 6));
-    ASSERT_TRUE(tok_is(toks[6], token::RT_CR_BRACKET, 3, 1));
-    ASSERT_TRUE(tok_is(toks[7], token::END, 3, 2));
+    ASSERT_TRUE(tok_is(toks[6], token::IDENTIFIER, 3, 1));
+    ASSERT_TRUE(tok_is(toks[7], token::COLON, 3, 2));
+    ASSERT_TRUE(tok_is(toks[8], token::TYPE, 3, 3));
+    ASSERT_TRUE(tok_is(toks[9], token::SEMICOLON, 3, 8));
+    ASSERT_TRUE(tok_is(toks[10], token::RT_CR_BRACKET, 4, 1));
+    ASSERT_TRUE(tok_is(toks[11], token::GO, 5, 1));
+    ASSERT_TRUE(tok_is(toks[12], token::LF_CR_BRACKET, 5, 3));
+    ASSERT_TRUE(tok_is(toks[13], token::IDENTIFIER, 6, 1));
+    ASSERT_TRUE(tok_is(toks[14], token::ASSIGN, 6, 2));
+    ASSERT_TRUE(tok_is(toks[15], token::INT_LITERAL, 6, 3));
+    ASSERT_TRUE(tok_is(toks[16], token::SEMICOLON, 6, 4));
+    ASSERT_TRUE(tok_is(toks[17], token::RT_CR_BRACKET, 7, 1));
+    ASSERT_TRUE(tok_is(toks[18], token::END, 7, 2));
 }
 
 TEST(Parser, DefaultTest) {
     std::string source = "VAR{\n"
             "i:int;\n"
+            "i2:float;\n"
+            "}\n"
+            "GO{\n"
+            "i = 1;\n"
             "}";
 
     CapturingErrorLogger *eL = new CapturingErrorLogger();
     ErrorLoggerWrapper *eLW = new ErrorLoggerWrapper(eL);
 
     std::vector<Token> tokens = tokenize(source);
-    node::VarChapter *var_chapter = parse(tokens, eLW);
-    ASSERT_TRUE(parseResult_isPass(var_chapter, eL, source));
+    node::Program *program = parse(tokens, eLW);
+    ASSERT_TRUE(parseResult_isPass(program, eL, source));
 }
 
 TEST(Parser, FailTest) {
     std::string source = "VARR{\n"
             "i:int;\n"
+            "}\n"
+            "GO{\n"
+            "i = 1;\n"
             "}";
     
     CapturingErrorLogger *eL = new CapturingErrorLogger();
     ErrorLoggerWrapper *eLW = new ErrorLoggerWrapper(eL);
     
     std::vector<Token> tokens = tokenize(source);
-    node::VarChapter *var_chapter = parse(tokens, eLW);
-    ASSERT_TRUE(parseResult_isFail(var_chapter, eL, 1, 1));
+    node::Program *program = parse(tokens, eLW);
+    ASSERT_TRUE(parseResult_isFail(program, eL, 1, 1));
 }
 

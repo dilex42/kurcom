@@ -3,8 +3,14 @@
 
 CMakeFiles/trans.dir/src/Lexer.cpp.o
  /home/dima/kurcom/Translator/src/Lexer.cpp
+ include/Lexer.h
+ include/Token.h
 CMakeFiles/trans.dir/src/Node.cpp.o
  /home/dima/kurcom/Translator/src/Node.cpp
+ include/Error.h
+ include/Node.h
+ include/Seman.h
+ include/Token.h
 CMakeFiles/trans.dir/src/Seman.cpp.o
  /home/dima/kurcom/Translator/src/Seman.cpp
  include/Error.h

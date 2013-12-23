@@ -31,7 +31,7 @@ Token* Lexer::scan() {
     SourceLocation sl = SourceLocation(line, col);
     switch (c) {
     case -1 :
-        return new Token(token::END, SourceLocation(line, col));
+        return new Token(token::END, sl);
     case '0':
     case '1':
     case '2':
@@ -64,6 +64,10 @@ Token* Lexer::scan() {
         return new Token(token::LF_CR_BRACKET, sl);
     case '}':
         return new Token(token::RT_CR_BRACKET, sl);
+    case '(':
+        return new Token(token::LF_PARENTHESES, sl);
+    case ')':
+        return new Token(token::RT_PARENTHESES, sl);
     case ';':
         return new Token(token::SEMICOLON, sl);
     case ':':
@@ -82,8 +86,29 @@ Token* Lexer::scan() {
             return new Token(token::MULT, sl);
     case '/':
         return new Token(token::DIVIDE, sl);
+    case '<':
+        if (lookNextChar() == '=') {
+            getNextChar();
+            return new Token(token::LESS_EQUALS, sl);
+        } else
+            return new Token(token::LESS, sl);
+    case '>':
+        if (lookNextChar() == '=') {
+            getNextChar();
+            return new Token(token::MORE_EQUALS, sl);
+        } else
+            return new Token(token::MORE, sl);
     case '=':
-        return new Token(token::ASSIGN, sl);
+        if (lookNextChar() == '=') {
+            getNextChar();
+            return new Token(token::EQUALS, sl);
+        } else
+            return new Token(token::ASSIGN, sl);
+    case '!':
+        if (lookNextChar() == '=') {
+            getNextChar();
+            return new Token(token::NEQUALS, sl);
+        }
     default: {
         if(isIdentifierChar(c))
         {
@@ -95,6 +120,12 @@ Token* Lexer::scan() {
             nts.push_back(c);
             c = lookNextChar(false);
         }
+        if (nts.compare("and") == 0) {
+            return new Token(token::AND, sl);
+        }
+        if (nts.compare("or") == 0) {
+            return new Token(token::OR, sl);
+        }
         //check if it keyword
         if (nts.compare("VAR") == 0) {
             return new Token(token::VAR, sl);
@@ -102,12 +133,31 @@ Token* Lexer::scan() {
         if (nts.compare("GO") == 0) {
             return new Token(token::GO, sl);
         }
+        if (nts.compare("if") == 0) {
+            return new Token(token::IF, sl);
+        }
+        if (nts.compare("else") == 0) {
+            return new Token(token::ELSE, sl);
+        }
+        if (nts.compare("while") == 0) {
+            return new Token(token::WHILE, sl);
+        }
         //types
         if (nts.compare("int") == 0) {
             return new Token(token::TYPE, sl, token::TYPE_INT);
         }
         if (nts.compare("float") == 0) {
             return new Token(token::TYPE, sl, token::TYPE_FLOAT);
+        }
+        if (nts.compare("boolean") == 0) {
+            return new Token(token::TYPE, sl, token::TYPE_BOOLEAN);
+        }
+        //for boolean literals
+        if (nts.compare("true") == 0) {
+            return new Token(token::BOOLEAN_LITERAL, sl, true);
+        }
+        if (nts.compare("false") == 0) {
+            return new Token(token::BOOLEAN_LITERAL, sl, false);
         }
         //non keyword(id)
         return new Token(token::IDENTIFIER, sl, nts);

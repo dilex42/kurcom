@@ -16,9 +16,12 @@ int main(int argc, char** argv) {
     Lexer lexer(
             "VAR{\n"
             "i:int;\n"
+            "k:int;\n"
             "}\n"
             "GO{\n"
             "i = 1;\n"
+            "if(i!= true){\n"
+            "k = 13;"
             "}");
     Token * tok = NULL;
     std::vector<Token> result;

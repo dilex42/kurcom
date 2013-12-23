@@ -3,32 +3,30 @@
 
 <intLiteral> = /0|[1-9][0-9]+/
 <floatLiteral> = <intLiteral> "." /[0-9]*[1-9]/
+<booleanLiteral> = "true" | "false"
+<Literal> = <intLiteral> | <floatLiteral> | <booleanLiteral>
 
-<program> = [<varChapter>] [<funcChapter>] <goChapter>
+<varType> = "int" | "float" | "boolean"
+
+<program> = [<varChapter>]  <goChapter>
 
 <varChapter> = "VAR" "{" <varDecl> {"," <varDecl>} "}"
-
 <varDecl> = <identifier> ":" <varType>
 
-<varType> = <intLiteral> | <floatLiteral> 
-
 <goChapter> = "GO" <block>
-<block> = "{" <statement> "}"
-<statement> = <assignmentStatement> 
+<block> = "{" { <statement> }"}"
+<statement> = <ifStatement> | <whileStatement> | <assignmentStatement> 
 
-<assignmentStatement> = <identifier> "=" <expression> ";"
-<expression> = <mathExpression> | <booleanExpression>
-<mathExpression> = <operand> <mathOperator> <operand>
-<booleanExpression> = <operand> <booleanOperator> <operand>
-<mathOperator> = "+" | "-" | "*" | "/" | "**"
-<booleanOperator> = "and" | "or"
-<operand> = <identifier> | <varType>  
+<assignmentStatement> = <identifier> "=" <booleanExpression> ";"
+
+<booleanExpression> = <booleanTem> { "or" <booleanTerm>}
+<booleanTerm> = <booleanRelation> { "and" <booleanRelation>}
+<booleanRelation> = <mathExpression> [ ("=="|"!="|">"|"<"|">="|"<=") <mathExpression>]
+<mathExpression> = <mathTerm> {("+"|"-") <mathTerm>}
+<mathTerm> = <mathPow> { ("*"|"/") <mathPow>}
+<mathPow> = <operand> { "**" <operand> }
+<operand> = <identifier> | <Literal> | "(" <booleanExpression> ")" 
 
 
-
-
-
-<funcChapter> = "FUNC" "{" <funcBlock>+ "}"
-
-<funcBlock> = <funcDecl> "{"<varDecl> <block> "}"
-<funcDecl> = 
+<ifStatement> = "if" "(" <booleanExpression> ")" <block> [ "else" <block> ]
+<whileStatement> = "while" "(" <booleanExpression> ")" <block>

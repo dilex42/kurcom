@@ -19,15 +19,30 @@ public:
         logger(logger),
         next_index(0) {}
         
-    node::VarChapter *parseVarChapter();
-    
+    node::Program *parseProgram();
     ErrorLoggerWrapper *getLogger() const {
         return logger;
     }
     
 private:
+    node::VarChapter *parseVarChapter();
+    node::GoChapter *parseGoChapter();
     node::VarType *parseVarType();  
-    std::vector<node::VarDecl *> *parseVarDeclList();   
+    std::vector<node::VarDecl *> *parseVarDeclList();
+
+    std::vector<node::Statement *> *parseStatementList();
+    node::Statement *parseIfStatement();
+    node::Statement *parseWhileStatement();
+    node::Statement *parseAssignmentStatement();    
+
+    node::Expression *parseBooleanExpression();
+    node::Expression *parseBooleanTerm();
+    node::Expression *parseBooleanRelation();
+    node::Expression *parseMathExpression();
+    node::Expression *parseMathTerm();
+    node::Expression *parseMathPow();
+    node::Expression *parseParenthesesExpression();
+    node::Expression *parseOperand();   
     
     Token next_token() {
         return source[next_index];
