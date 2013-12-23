@@ -95,18 +95,18 @@ private:
 
 class FloatLiteral: public Expression {
 public:
-    FloatLiteral(double value, SourceLocation loc) :
+    FloatLiteral(float value, SourceLocation loc) :
             value(value), loc(loc) {
     }
 
-    double getValue() const {
+    float getValue() const {
         return value;
     }
 
     virtual void accept(Seman::Visitor *v);
 
 private:
-    double value;
+    float value;
     SourceLocation loc;
 };
 
